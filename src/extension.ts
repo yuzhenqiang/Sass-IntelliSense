@@ -1,26 +1,110 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import { commands, window, ExtensionContext, workspace, Disposable } from 'vscode';
+import { registerCompletionProvider, unregisterProviders } from './utils/completionProvider';
+import { run } from './utils/cache'
+import { Command, Configuration } from './enums';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "sass-classname-helper" is now active!');
+const htmlDisposables: Disposable[] = [];
+const cssDisposables: Disposable[] = [];
+const javaScriptDisposables: Disposable[] = [];
+const emmetDisposables: Disposable[] = [];
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('sass-classname-helper.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from sass-classname-helper!');
-	});
+const registerHTMLProviders = (disposables: Disposable[]) =>
+	workspace.getConfiguration()
+		?.get<string[]>(Configuration.HTMLLanguages)
+		?.forEach((extension) => {
+			disposables.push(registerCompletionProvider(extension, /class=["|']([\w- ]*$)/));
+			disposables.push(registerCompletionProvider(extension, /(:class)=["|'].*["|']/i));
+		});
 
-	context.subscriptions.push(disposable);
+const registerCSSProviders = (disposables: Disposable[]) =>
+	workspace.getConfiguration()
+		.get<string[]>(Configuration.CSSLanguages)
+		?.forEach((extension) => {
+			// The @apply rule was a CSS proposal which has since been abandoned,
+			// check the proposal for more info: http://tabatkins.github.io/specs/css-apply-rule/
+			// Its support should probably be removed
+			disposables.push(registerCompletionProvider(extension, /@apply ([.\w- ]*$)/, "."));
+		});
+
+const registerJavaScriptProviders = (disposables: Disposable[]) =>
+	workspace.getConfiguration()
+		.get<string[]>(Configuration.JavaScriptLanguages)
+		?.forEach((extension) => {
+			disposables.push(registerCompletionProvider(extension, /className=["|']([\w- ]*$)/));
+			disposables.push(registerCompletionProvider(extension, /class=["|']([\w- ]*$)/));
+		});
+
+function registerEmmetProviders(disposables: Disposable[]) {
+	const emmetRegex = /(?=\.)([\w-. ]*$)/;
+
+	const registerProviders = (modes: string[]) => {
+		modes.forEach((language) => {
+			disposables.push(registerCompletionProvider(language, emmetRegex, "", "."));
+		});
+	};
+
+	const htmlLanguages = workspace.getConfiguration().get<string[]>(Configuration.HTMLLanguages);
+	if (htmlLanguages) {
+		registerProviders(htmlLanguages);
+	}
+
+	const javaScriptLanguages = workspace.getConfiguration().get<string[]>(Configuration.JavaScriptLanguages);
+	if (javaScriptLanguages) {
+		registerProviders(javaScriptLanguages);
+	}
+}
+
+
+export function activate(context: ExtensionContext) {
+	const disposables: Disposable[] = [];
+	workspace.onDidChangeConfiguration(async (e) => {
+		try {
+			if (e.affectsConfiguration(Configuration.Paths)) {
+				run()
+			}
+			if (e.affectsConfiguration(Configuration.EnableEmmetSupport)) {
+				const isEnabled = workspace.getConfiguration()
+					.get<boolean>(Configuration.EnableEmmetSupport);
+				isEnabled ? registerEmmetProviders(emmetDisposables) : unregisterProviders(emmetDisposables);
+			}
+
+			if (e.affectsConfiguration(Configuration.HTMLLanguages)) {
+				unregisterProviders(htmlDisposables);
+				registerHTMLProviders(htmlDisposables);
+			}
+
+			if (e.affectsConfiguration(Configuration.CSSLanguages)) {
+				unregisterProviders(cssDisposables);
+				registerCSSProviders(cssDisposables);
+			}
+
+			if (e.affectsConfiguration(Configuration.JavaScriptLanguages)) {
+				unregisterProviders(javaScriptDisposables);
+				registerJavaScriptProviders(javaScriptDisposables);
+			}
+		} catch (err) {
+			window.showErrorMessage(err instanceof Error ? err.message : 'Failed to automatically reload the extension after the configuration change')
+		}
+	}, null, disposables)
+	context.subscriptions.push(...disposables);
+
+	context.subscriptions.push(commands.registerCommand(Command.Refresh, run));
+
+	if (workspace.getConfiguration().get<boolean>(Configuration.EnableEmmetSupport)) {
+		registerEmmetProviders(emmetDisposables);
+	}
+
+	registerHTMLProviders(htmlDisposables);
+	registerCSSProviders(cssDisposables);
+	registerJavaScriptProviders(javaScriptDisposables);
+
+	run()
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	unregisterProviders(htmlDisposables)
+	unregisterProviders(cssDisposables)
+	unregisterProviders(javaScriptDisposables)
+	unregisterProviders(emmetDisposables)
+}

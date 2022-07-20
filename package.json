@@ -1,5 +1,5 @@
 {
-  "name": "sass-classname-helper",
+	"name": "sass-classname-helper",
 	"displayName": "sass-classname-helper",
 	"description": "",
 	"version": "0.0.1",
@@ -9,17 +9,60 @@
 	"categories": [
 		"Other"
 	],
-	"activationEvents": [
-        "onCommand:sass-classname-helper.helloWorld"
-	],
+	"activationEvents": ["*"],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "sass-classname-helper.helloWorld",
-				"title": "Hello World"
+				"command": "sass-classname-helper.refresh",
+				"title": "Refresh",
+				"category": "ClassName"
 			}
-		]
+		],
+		"configuration": {
+			"properties": {
+				"sass-classname-helper.Paths": {
+					"type": "array",
+					"default": [],
+					"description": "Sass/Scss文件地址"
+				},
+				"sass-classname-helper.EnableEmmetSupport": {
+					"type": "boolean",
+					"default": false,
+					"description": "Enables completion when you're writing Emmet abbreviations."
+				},
+				"html-css-class-completion.HTMLLanguages": {
+					"type": "array",
+					"description": "A list of HTML based languages where suggestions are enabled.",
+					"default": [
+						"html",
+						"vue",
+						"handlebars",
+						"markdown",
+						"ejs",
+						"svelte"
+					]
+				},
+				"html-css-class-completion.CSSLanguages": {
+					"type": "array",
+					"description": "A list of CSS based languages where suggestions are enabled.",
+					"default": [
+						"css",
+						"sass",
+						"scss"
+					]
+				},
+				"html-css-class-completion.JavaScriptLanguages": {
+					"type": "array",
+					"description": "A list of JavaScript based languages where suggestions are enabled.",
+					"default": [
+						"javascript",
+						"javascriptreact",
+						"typescriptreact"
+					]
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",
@@ -30,16 +73,21 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.69.0",
 		"@types/glob": "^7.2.0",
 		"@types/mocha": "^9.1.1",
 		"@types/node": "16.x",
+		"@types/vscode": "^1.69.0",
 		"@typescript-eslint/eslint-plugin": "^5.30.0",
 		"@typescript-eslint/parser": "^5.30.0",
+		"@vscode/test-electron": "^2.1.5",
 		"eslint": "^8.18.0",
 		"glob": "^8.0.3",
 		"mocha": "^10.0.0",
-		"typescript": "^4.7.4",
-		"@vscode/test-electron": "^2.1.5"
+		"typescript": "^4.7.4"
+	},
+	"dependencies": {
+		"@types/css": "^0.0.33",
+		"css": "^3.0.0",
+		"sass": "^1.53.0"
 	}
 }
