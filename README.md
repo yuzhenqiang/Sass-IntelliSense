@@ -6,6 +6,8 @@
 提供Sass/Scss编译后的className在html、css、vue文件里的自动补全功能
 ## Todo
 
-[] ID 不全
-[] Vuejsx class支持
-[] Sass 变量自动补全
+- [ ] ID 不全
+
+- [ ] Vuejsx class支持
+
+- [ ] Sass 变量自动补全
