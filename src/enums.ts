@@ -1,11 +1,11 @@
 export enum Configuration {
-	Paths = 'sass-classname-helper.Paths',
-	EnableEmmetSupport = 'sass-classname-helper.enableEmmetSupport',
-	HTMLLanguages = "html-css-class-completion.HTMLLanguages",
-	CSSLanguages = "html-css-class-completion.CSSLanguages",
-	JavaScriptLanguages = "html-css-class-completion.JavaScriptLanguages",
+	Paths = 'sass-intellisense.Paths',
+	EnableEmmetSupport = 'sass-intellisense.enableEmmetSupport',
+	HTMLLanguages = "sass-intellisense.HTMLLanguages",
+	CSSLanguages = "sass-intellisense.CSSLanguages",
+	JavaScriptLanguages = "sass-intellisense.JavaScriptLanguages",
 }
 
 export enum Command {
-	Refresh = 'sass-classname-helper.refresh'
+	Refresh = 'sass-intellisense.refresh'
 }

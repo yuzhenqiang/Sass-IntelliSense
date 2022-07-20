@@ -1,12 +1,20 @@
 {
-	"name": "sass-classname-helper",
-	"displayName": "sass-classname-helper",
-	"description": "",
+	"name": "sass-intellisense",
+	"displayName": "Sass IntelliSense",
+	"description": "智能感知Sass生成的ClassName",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.69.0"
 	},
+	"keywords": [
+		"sass",
+		"html",
+    "css",
+    "class",
+    "autocomplete"
+	],
 	"categories": [
+		"Programming Languages",
 		"Other"
 	],
 	"activationEvents": ["*"],
@@ -14,24 +22,24 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "sass-classname-helper.refresh",
+				"command": "sass-intellisense.refresh",
 				"title": "Refresh",
 				"category": "ClassName"
 			}
 		],
 		"configuration": {
 			"properties": {
-				"sass-classname-helper.Paths": {
+				"sass-intellisense.Paths": {
 					"type": "array",
 					"default": [],
 					"description": "Sass/Scss文件地址"
 				},
-				"sass-classname-helper.EnableEmmetSupport": {
+				"sass-intellisense.EnableEmmetSupport": {
 					"type": "boolean",
 					"default": false,
 					"description": "Enables completion when you're writing Emmet abbreviations."
 				},
-				"html-css-class-completion.HTMLLanguages": {
+				"sass-intellisense.HTMLLanguages": {
 					"type": "array",
 					"description": "A list of HTML based languages where suggestions are enabled.",
 					"default": [
@@ -43,7 +51,7 @@
 						"svelte"
 					]
 				},
-				"html-css-class-completion.CSSLanguages": {
+				"sass-intellisense.CSSLanguages": {
 					"type": "array",
 					"description": "A list of CSS based languages where suggestions are enabled.",
 					"default": [
@@ -52,7 +60,7 @@
 						"scss"
 					]
 				},
-				"html-css-class-completion.JavaScriptLanguages": {
+				"sass-intellisense.JavaScriptLanguages": {
 					"type": "array",
 					"description": "A list of JavaScript based languages where suggestions are enabled.",
 					"default": [
